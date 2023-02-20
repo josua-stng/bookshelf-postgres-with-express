@@ -42,6 +42,13 @@ app.get("/books/:id", (req, res) => {
       res.status(500).send("Internal Server Error");
       return;
     }
+    else if(result.rows.length === 0){
+      res.send({
+        status:501,
+        message:'Id not found'
+      })
+      return;
+    }
     // kirimkan data hasil query dalam format JSON
     return res.status(200).json(result.rows);
   });
@@ -59,7 +66,10 @@ app.post("/books/add", (req, res) => {
         res.status(500).send(`Internal server error`);
         return;
       }
-      return res.status(201).send(`Book added successfuly`);
+      return res.send({
+        status:201,
+        message:'Book added successfuly'
+      })
     }
   );
 });
@@ -91,6 +101,12 @@ app.delete('/books/:id',(req,res)=>{
                 console.error(error);
                 res.status(500).send(`Internal server error`);
                 return;
+              }
+              else if(result.rowCount === 0){
+                return res.send({
+                  status:500,
+                  message:'Failed delete, Id not found'
+                })
               }
               return res.status(201).send(`Book successfuly deleted`);
         }
