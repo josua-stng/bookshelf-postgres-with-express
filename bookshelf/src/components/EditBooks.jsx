@@ -12,26 +12,31 @@ const EditBooks = () => {
 
   const editBooks = async (e) => {
     e.preventDefault();
-    const body = {
-      name: nameUrl,
-      summary: summaryUrl,
-      year: yearUrl,
-      author: authorUrl,
-    };
     try {
-      const response = await fetch(`http://localhost:3000/books/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (response.status >= 400) {
-        const result = await response.json();
-        setError(result.error);
-        return;
+      const yearToString = parseInt(yearUrl);
+      if (isNaN(yearUrl)) {
+        alert("Year must be number");
+      } else {
+        const body = {
+          name: nameUrl,
+          summary: summaryUrl,
+          year: yearToString,
+          author: authorUrl,
+        };
+        const response = await fetch(`http://localhost:3000/books/${id}`, {
+          method: "PUT",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (response.ok) {
+          navigate("/");
+        } else {
+          const error = await response.json();
+          throw new Error(error.error);
+        }
       }
-      navigate("/");
     } catch (error) {
-      setError(error);
+      setError(error.message);
     }
   };
 
@@ -39,7 +44,7 @@ const EditBooks = () => {
     try {
       const response = await fetch(`http://localhost:3000/books/${id}`);
       const data = await response.json();
-      const result = data[0]
+      const result = data[0];
       setNameUrl(result.name);
       setSummaryUrl(result.summary);
       setYearUrl(result.year);
@@ -52,7 +57,7 @@ const EditBooks = () => {
   useEffect(() => {
     handleEditBooks(id);
   }, [id]);
-  
+
   return (
     <div>
       <div className="mt-5">
