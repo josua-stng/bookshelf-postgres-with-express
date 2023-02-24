@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AddBooks = () => {
   const [nameUrl, setNameUrl] = useState("");
@@ -9,12 +10,32 @@ const AddBooks = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const successAlert = () => {
+    Swal.fire({
+      title: "Success",
+      text: "Success Add Book",
+      icon: "success",
+      confirmButtonText: "OK",
+    }).then(function () {
+      // Redirect the user
+      navigate("/");
+    });
+  };
+
+  const failedAlert = () => {
+    Swal.fire({
+      title: "Failed",
+      text: "Year must be number",
+      icon: "error",
+    });
+  };
+
   const addBooks = async (e) => {
     e.preventDefault();
     try {
       const yearToString = parseInt(yearUrl);
       if (isNaN(yearToString)) {
-        alert("Year must be number");
+        failedAlert();
       } else {
         const body = {
           name: nameUrl,
@@ -24,11 +45,11 @@ const AddBooks = () => {
         };
         const response = await fetch("http://localhost:3000/books/add", {
           method: "POST",
-          headers:{"Content-Type": "application/json"},
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
         if (response.ok) {
-          navigate("/");
+          successAlert();
         } else {
           const error = await response.json();
           throw new Error(error.error);
@@ -43,7 +64,7 @@ const AddBooks = () => {
     <div>
       <div className="mt-5">
         <Link to="/" className="">
-          <button className=" ml-5 bg-gray-200 border-2 w-[100px] h-[40px] rounded-lg border-black">
+          <button className=" ml-5 bg-gray-200 border-2 w-[100px] h-[40px] rounded-lg border-black hover:bg-slate-300">
             Back
           </button>
         </Link>
@@ -83,7 +104,7 @@ const AddBooks = () => {
           onChange={(e) => setAuthorUrl(e.target.value)}
           className="border-2 border-black mb-10 pl-2"
         />
-        <button className="bg-gray-200 w-[270px]">Submit</button>
+        <button className="bg-gray-200 w-[270px] hover:bg-gray-300">Submit</button>
       </form>
     </div>
   );
