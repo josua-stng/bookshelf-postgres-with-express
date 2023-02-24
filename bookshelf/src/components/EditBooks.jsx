@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
+
 
 const EditBooks = () => {
   const [nameUrl, setNameUrl] = useState("");
@@ -10,12 +12,32 @@ const EditBooks = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const failedAlertEditBooks= () =>{
+    Swal.fire({
+      title:"Failed",
+      text:"Year must be number",
+      icon:"error",
+    })
+  }
+
+  const successAlertEditBooks= () =>{
+    Swal.fire({
+      title:"Success",
+      text:"Success edit book",
+      icon:"success",
+      confirmButtonText:"OK"
+    }).then(()=>{
+      navigate('/')
+    })
+  }
+
   const editBooks = async (e) => {
     e.preventDefault();
     try {
       const yearToString = parseInt(yearUrl);
       if (isNaN(yearUrl)) {
-        alert("Year must be number");
+        failedAlertEditBooks();
+        // alert("Year must be number");
       } else {
         const body = {
           name: nameUrl,
@@ -29,7 +51,7 @@ const EditBooks = () => {
           body: JSON.stringify(body),
         });
         if (response.ok) {
-          navigate("/");
+          successAlertEditBooks();
         } else {
           const error = await response.json();
           throw new Error(error.error);
@@ -62,7 +84,7 @@ const EditBooks = () => {
     <div>
       <div className="mt-5">
         <Link to="/" className="">
-          <button className=" ml-5 bg-gray-200 border-2 w-[100px] h-[40px] rounded-lg border-black">
+          <button className=" ml-5 bg-gray-200 border-2 w-[100px] h-[40px] rounded-lg border-black hover:bg-gray-300">
             Back
           </button>
         </Link>
@@ -102,7 +124,7 @@ const EditBooks = () => {
           onChange={(e) => setAuthorUrl(e.target.value)}
           className="border-2 border-black mb-10 pl-2"
         />
-        <button className="bg-gray-200 w-[270px]">Submit</button>
+        <button className="bg-gray-200 w-[270px] hover:bg-gray-300">Submit</button>
       </form>
     </div>
   );
